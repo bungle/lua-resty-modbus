@@ -7,7 +7,7 @@ return {
     parity = {
         none = parities[0],
         even = parities[1],
-        odd  = parities[3]
+        odd  = parities[2]
     },
     serial = {
         modes = {
