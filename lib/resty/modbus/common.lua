@@ -30,6 +30,7 @@ int modbus_read_input_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest);
 int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 int modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 int modbus_receive_confirmation(modbus_t *ctx, uint8_t *rsp);
+int modbus_report_slave_id(modbus_t *ctx, int max_dest, uint8_t *dest);
 /*
 void modbus_set_bits_from_byte(uint8_t *dest, int idx, const uint8_t value);
 void modbus_set_bits_from_bytes(uint8_t *dest, int idx, unsigned int nb_bits, const uint8_t *tab_byte);
@@ -202,6 +203,15 @@ function common:read_input_registers(addr, nb)
         res[i+1] = dest[i]
     end
     return res
+end
+
+function common:report_slave_id(max_dest)
+    local rsp = max_dest and ffi_new(dest8t, max_dest) or rsp
+    local rt = lib.modbus_report_slave_id(max_dest or 260, rsp)
+    if rt == -1 then
+        return nil, strerror()
+    end
+    return ffi_str(rsp, rt)
 end
 
 return common
