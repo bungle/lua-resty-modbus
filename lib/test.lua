@@ -37,7 +37,7 @@ print("Getting response timeout", rtu:get_response_timeout())
 print("Getting header length", rtu:get_header_length())
 
 print("Sending Raw Request", rtu:send_raw_request("\x01\x2b\x0e\x01\x00\x70\x77"))
-print("Receiving Confirmation", rtu:reeive_confirmation())
+print("Receiving Confirmation", rtu:reeive_confirmation(9))
 
 --print("Reading bits", rtu:read_bits(0, 10))
 --print("Reading input bits", rtu:read_input_bits(0, 10))
