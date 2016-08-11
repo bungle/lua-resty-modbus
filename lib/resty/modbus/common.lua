@@ -101,9 +101,19 @@ function common:send_raw_request(raw)
     ffi_copy(req, raw, len)
     len = lib.modbus_send_raw_request(self.context, req, len)
     if len ~= -1 then
-        if lib.modbus_receive_confirmation(self.context, rsp) ~= -1 then
-            return ffi_str(rsp), len
+        return len
+    end
+    return nil, strerror()
+end
+
+function common:reeive_confirmation(len)
+    local rsp = len and ffi_new(dest8t, len) or rsp
+    local len = lib.modbus_receive_confirmation(self.context, rsp)
+    if len ~= -1 then
+        if len == 0 then
+            return "", 0
         end
+        return ffi_str(rsp, len)
     end
     return nil, strerror()
 end
