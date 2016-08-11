@@ -207,7 +207,7 @@ end
 
 function common:report_slave_id(max_dest)
     local rsp = max_dest and ffi_new(dest8t, max_dest) or rsp
-    local rt = lib.modbus_report_slave_id(max_dest or 260, rsp)
+    local rt = lib.modbus_report_slave_id(self.context, max_dest or 260, rsp)
     if rt == -1 then
         return nil, strerror()
     end
