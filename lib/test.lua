@@ -11,7 +11,7 @@ rtu:set_debug(true)
 
 print("Connecting", rtu:connect())
 
-print("Setting slave", rtu:set_slave(1))
+--print("Setting slave", rtu:set_slave(1))
 
 print("Getting serial mode", rtu:get_serial_mode())
 print("Setting serial mode", rtu:set_serial_mode("rs485"))
