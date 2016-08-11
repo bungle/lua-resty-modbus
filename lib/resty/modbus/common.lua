@@ -29,6 +29,7 @@ int modbus_read_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest);
 int modbus_read_input_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest);
 int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 int modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
+int modbus_receive_confirmation(modbus_t *ctx, uint8_t *rsp);
 /*
 void modbus_set_bits_from_byte(uint8_t *dest, int idx, const uint8_t value);
 void modbus_set_bits_from_bytes(uint8_t *dest, int idx, unsigned int nb_bits, const uint8_t *tab_byte);
@@ -56,6 +57,8 @@ local time32t = ffi_typeof "uint32_t[1]"
 
 local sec = ffi_new(time32t)
 local usec = ffi_new(time32t)
+
+local rsp = ffi_new(dest8t, 260)
 
 local function strerror(errno)
     return ffi_str(lib.modbus_strerror(errno or ffi_errno()))
@@ -98,7 +101,9 @@ function common:send_raw_request(raw)
     ffi_copy(req, raw, len)
     len = lib.modbus_send_raw_request(self.context, req, len)
     if len ~= -1 then
-        return len
+        if lib.modbus_receive_confirmation(self.context, rsp) ~= -1 then
+            return ffi_str(rsp), len
+        end
     end
     return nil, strerror()
 end
