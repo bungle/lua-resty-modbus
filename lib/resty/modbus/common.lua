@@ -106,7 +106,7 @@ function common:send_raw_request(raw)
     return nil, strerror()
 end
 
-function common:reeive_confirmation(len)
+function common:receive_confirmation(len)
     local rsp = len and ffi_new(dest8t, len) or rsp
     local len = lib.modbus_receive_confirmation(self.context, rsp)
     if len ~= -1 then
