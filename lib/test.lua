@@ -14,7 +14,7 @@ print("Connecting", rtu:connect())
 print("Setting slave", rtu:set_slave(1))
 
 print("Getting serial mode", rtu:get_serial_mode())
-print("Setting serial mode", rtu:set_serial_mode("rs485"))
+print("Setting serial mode", rtu:set_serial_mode("rs232"))
 print("Getting serial mode", rtu:get_serial_mode())
 
 print("Getting RTS mode", rtu:get_rts())
