@@ -8,6 +8,9 @@ if not rtu then
 end
 
 rtu:set_debug(true)
+
+print("Connecting", rtu:connect())
+
 print("Setting slave", rtu:set_slave(1))
 
 print("Getting serial mode", rtu:get_serial_mode())
@@ -32,8 +35,6 @@ print("Setting response timeout", rtu:set_response_timeout(0, 500000))
 print("Getting response timeout", rtu:get_response_timeout())
 
 print("Getting header length", rtu:get_header_length())
-
-print("Connecting", rtu:connect())
 
 print("Reading bits", rtu:read_bits(0, 10))
 print("Reading input bits", rtu:read_input_bits(0, 10))
