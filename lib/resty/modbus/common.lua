@@ -182,9 +182,10 @@ function common:read_registers(addr, nb)
     if regs == -1 then
         return nil, strerror()
     end
+    regs = regs - 1
     local res = {}
     for i=0, regs do
-        res[i+1] = tonumber(dest[i])
+        res[i+1] = dest[i]
     end
     return res
 end
@@ -195,9 +196,10 @@ function common:read_input_registers(addr, nb)
     if regs == -1 then
         return nil, strerror()
     end
+    regs = regs - 1
     local res = {}
     for i=0, regs do
-        res[i+1] = tonumber(dest[i])
+        res[i+1] = dest[i]
     end
     return res
 end
