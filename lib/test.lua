@@ -1,6 +1,6 @@
 local print = print
 local exit = os.exit
-local rtu, err = require "resty.modbus.rtu".new("/dev/ttyXRUSB")
+local rtu, err = require "resty.modbus.rtu".new("/dev/ttyXRUSB0")
 
 if not rtu then
     print(err)
