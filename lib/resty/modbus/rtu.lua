@@ -36,10 +36,11 @@ function rtu:set_serial_mode(mode)
     if type(mode) ~= "number" then
         mode = sermodes[mode] or sermodes.rs232
     end
-    if lib.modbus_rtu_set_serial_mode(self.context, mode) == 0 then
-        return true
+    local rt = lib.modbus_rtu_set_serial_mode(self.context, mode)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return rt
 end
 function rtu:get_serial_mode()
     local mode = lib.modbus_rtu_get_serial_mode(self.context)
@@ -52,10 +53,11 @@ function rtu:set_rts(mode)
     if type(mode) ~= "number" then
         mode = rts[mode] or rts.none
     end
-    if lib.modbus_rtu_set_rts(self.context, mode) == 0 then
-        return true
+    local rt = lib.modbus_rtu_set_rts(self.context, mode)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return rt
 end
 function rtu:get_rts()
     local mode = lib.modbus_rtu_get_rts(self.context)
@@ -65,10 +67,11 @@ function rtu:get_rts()
     return mode
 end
 function rtu:set_rts_delay(usec)
-    if lib.modbus_rtu_set_rts_delay(self.context, usec) == 0 then
-        return true
+    local rt = lib.modbus_rtu_set_rts_delay(self.context, usec)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return rt
 end
 function rtu:get_rts_delay()
     local delay = lib.modbus_rtu_get_rts_delay(self.context)

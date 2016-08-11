@@ -67,10 +67,11 @@ end
 local common = { strerror = strerror }
 
 function common:connect()
-    if lib.modbus_connect(self.context) == 0 then
-        return true
+    local rt = lib.modbus_connect(self.context)
+    if rt == -1 then
+        lib.modbus_connect(self.context)
     end
-    return nil, strerror()
+    return rt
 end
 
 function common:close()
@@ -78,10 +79,11 @@ function common:close()
 end
 
 function common:flush()
-    if lib.modbus_close(self.context) == 0 then
-        return true
+    local rt = lib.modbus_close(self.context)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return rt
 end
 
 function common:set_debug(enable)
@@ -89,10 +91,12 @@ function common:set_debug(enable)
 end
 
 function common:set_slave(slave)
-    if lib.modbus_set_slave(self.context, slave) == 0 then
-        return true
+    local rt = lib.modbus_set_slave(self.context, slave)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return rt
+
 end
 
 function common:send_raw_request(raw)
@@ -100,50 +104,54 @@ function common:send_raw_request(raw)
     local req = ffi_new(dest8t, len)
     ffi_copy(req, raw, len)
     len = lib.modbus_send_raw_request(self.context, req, len)
-    if len ~= -1 then
-        return len
+    if len == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return len
 end
 
 function common:receive_confirmation(len)
     local rsp = len and ffi_new(dest8t, len) or rsp
     local len = lib.modbus_receive_confirmation(self.context, rsp)
-    if len ~= -1 then
-        if len == 0 then
-            return "", 0
-        end
-        return ffi_str(rsp, len)
+    if len == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    if len == 0 then
+        return "", 0
+    end
+    return ffi_str(rsp, len)
 end
 
 function common:get_byte_timeout()
-    if lib.modbus_get_byte_timeout(self.context, sec, usec) == 0 then
-        return tonumber(sec[0]), tonumber(usec[0])
+    local rt = lib.modbus_get_byte_timeout(self.context, sec, usec)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return tonumber(sec[0]), tonumber(usec[0])
 end
 
 function common:set_byte_timeout(sec, usec)
-    if lib.modbus_set_byte_timeout(self.context, sec, usec) == 0 then
-        return true
+    local rt = lib.modbus_set_byte_timeout(self.context, sec, usec)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return rt
 end
 
 function common:get_response_timeout()
-    if lib.modbus_get_response_timeout(self.context, sec, usec) == 0 then
-        return tonumber(sec[0]), tonumber(usec[0])
+    local rt = lib.modbus_get_response_timeout(self.context, sec, usec)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return tonumber(sec[0]), tonumber(usec[0])
 end
 
 function common:set_response_timeout(sec, usec)
-    if lib.modbus_set_response_timeout(self.context, sec, usec) == 0 then
-        return true
+    local rt = lib.modbus_set_response_timeout(self.context, sec, usec)
+    if rt == -1 then
+        return nil, strerror()
     end
-    return nil, strerror()
+    return rt
 end
 
 function common:get_header_length()
