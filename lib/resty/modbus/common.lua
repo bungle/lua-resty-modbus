@@ -96,7 +96,7 @@ function common:send_raw_request(raw)
     local len = #raw
     local req = ffi_new(dest8t, len)
     ffi_copy(req, raw, len)
-    if lib.modbus_send_raw_request(self.context, req, len) == 0 then
+    if lib.modbus_send_raw_request(self.context, req, len) == -1 then
         return true
     end
     return nil, strerror()
