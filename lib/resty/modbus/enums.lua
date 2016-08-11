@@ -11,7 +11,7 @@ return {
     },
     serial = {
         modes = {
-            rs323 = 0,
+            rs232 = 0,
             rs485 = 1
         }
     },
