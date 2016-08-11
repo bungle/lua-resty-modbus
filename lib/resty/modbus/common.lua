@@ -6,6 +6,7 @@ local ffi_cdef = ffi.cdef
 local ffi_errno = ffi.errno
 local ffi_typeof = ffi.typeof
 local ffi_sizeof = ffi.sizeof
+local ffi_copy = ffi.copy
 local C = ffi.C
 local tonumber = tonumber
 
@@ -92,7 +93,10 @@ function common:set_slave(slave)
 end
 
 function common:send_raw_request(raw)
-    if lib.modbus_send_raw_request(self.context, raw, #raw) == 0 then
+    local len = #raw
+    local req = ffi_new(dest8t, len)
+    ffi_copy(req, raw, len)
+    if lib.modbus_send_raw_request(self.context, req, len) == 0 then
         return true
     end
     return nil, strerror()
