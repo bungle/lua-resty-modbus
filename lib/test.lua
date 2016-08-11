@@ -33,6 +33,8 @@ print("Getting response timeout", rtu:get_response_timeout())
 
 print("Getting header length", rtu:get_header_length())
 
+print("Connecting", rtu:connect())
+
 print("Reading bits", rtu:read_bits(0, 10))
 print("Reading input bits", rtu:read_input_bits(0, 10))
 

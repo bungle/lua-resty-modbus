@@ -11,6 +11,7 @@ local tonumber = tonumber
 
 ffi_cdef[[
 typedef struct _modbus modbus_t;
+int modbus_connect(modbus_t *ctx);
 void modbus_free(modbus_t *ctx);
 void modbus_close(modbus_t *ctx);
 int modbus_flush(modbus_t *ctx);
@@ -60,6 +61,13 @@ local function strerror(errno)
 end
 
 local common = { strerror = strerror }
+
+function common:connect()
+    if lib.modbus_connect(self.context) == 0 then
+        return true
+    end
+    return nil, strerror()
+end
 
 function common:close()
     lib.modbus_close(self.context)
