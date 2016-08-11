@@ -7,7 +7,7 @@ if not rtu then
     exit(-1)
 end
 
-rtu:set_debug(true)
+rtu:set_debug(false)
 
 print("Connecting", rtu:connect())
 
