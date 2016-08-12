@@ -7,6 +7,8 @@ if not rtu then
     exit(-1)
 end
 
+print("Version", rtu.version)
+
 rtu:set_debug(false)
 
 print("Connecting", rtu:connect())

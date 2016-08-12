@@ -11,6 +11,9 @@ local C = ffi.C
 local tonumber = tonumber
 
 ffi_cdef[[
+extern const unsigned int libmodbus_version_major;
+extern const unsigned int libmodbus_version_minor;
+extern const unsigned int libmodbus_version_micro;
 typedef struct _modbus modbus_t;
 int modbus_connect(modbus_t *ctx);
 void modbus_free(modbus_t *ctx);
@@ -31,7 +34,13 @@ int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 int modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 int modbus_receive_confirmation(modbus_t *ctx, uint8_t *rsp);
 int modbus_report_slave_id(modbus_t *ctx, int max_dest, uint8_t *dest);
+int modbus_write_bit(modbus_t *ctx, int coil_addr, int status);
+int modbus_write_register(modbus_t *ctx, int reg_addr, int value);
+int modbus_write_bits(modbus_t *ctx, int addr, int nb, const uint8_t *data);
 /*
+int modbus_write_registers(modbus_t *ctx, int addr, int nb, const uint16_t *data);
+int modbus_mask_write_register(modbus_t *ctx, int addr, uint16_t and_mask, uint16_t or_mask);
+int modbus_write_and_read_registers(modbus_t *ctx, int write_addr, int write_nb, const uint16_t *src, int read_addr, int read_nb, uint16_t *dest);
 void modbus_set_bits_from_byte(uint8_t *dest, int idx, const uint8_t value);
 void modbus_set_bits_from_bytes(uint8_t *dest, int idx, unsigned int nb_bits, const uint8_t *tab_byte);
 uint8_t modbus_get_byte_from_bits(const uint8_t *src, int idx, unsigned int nb_bits);
@@ -65,12 +74,12 @@ local function strerror(errno)
     return ffi_str(lib.modbus_strerror(errno or ffi_errno()))
 end
 
-local common = { strerror = strerror }
+local common = { strerror = strerror, version = lib.libmodbus_version_major .. "." .. lib.libmodbus_version_minor .. "." .. lib.libmodbus_version_micro }
 
 function common:connect()
     local rt = lib.modbus_connect(self.context)
     if rt == -1 then
-        lib.modbus_connect(self.context)
+        return nil, strerror()
     end
     return rt
 end
@@ -160,6 +169,7 @@ function common:get_header_length()
 end
 
 function common:read_bits(addr, nb)
+    nb = nb or 1
     local dest = ffi_new(dest8t, nb * size8t)
     local bits = lib.modbus_read_bits(self.context, addr, nb, dest)
     if bits == -1 then
@@ -169,6 +179,7 @@ function common:read_bits(addr, nb)
 end
 
 function common:read_input_bits(addr, nb)
+    nb = nb or 1
     local dest = ffi_new(dest8t, nb * size8t)
     local bits = lib.modbus_read_input_bits(self.context, addr, nb, dest)
     if bits == -1 then
@@ -178,6 +189,7 @@ function common:read_input_bits(addr, nb)
 end
 
 function common:read_registers(addr, nb)
+    nb = nb or 1
     local dest = ffi_new(dest16t, nb * size16t)
     local regs = lib.modbus_read_registers(self.context, addr, nb, dest)
     if regs == -1 then
@@ -192,6 +204,7 @@ function common:read_registers(addr, nb)
 end
 
 function common:read_input_registers(addr, nb)
+    nb = nb or 1
     local dest = ffi_new(dest16t, nb * size16t)
     local regs = lib.modbus_read_input_registers(self.context, addr, nb, dest)
     if regs == -1 then
@@ -212,6 +225,30 @@ function common:report_slave_id(max_dest)
         return nil, strerror()
     end
     return ffi_str(rsp, rt)
+end
+
+function common:write_bit(coil_addr, status)
+    local rt = lib.modbus_write_bit(self.context, coil_addr, not not status)
+    if rt == -1 then
+        return nil, strerror()
+    end
+    return rt
+end
+
+function common:write_register(reg_addr, value)
+    local rt = lib.modbus_write_register(self.context, reg_addr, value)
+    if rt == -1 then
+        return nil, strerror()
+    end
+    return rt
+end
+
+function common:write_bits(addr, nb, data)
+    local rt = lib.modbus_write_bits(self.context, addr, nb, data)
+    if rt == -1 then
+        return nil, strerror()
+    end
+    return rt
 end
 
 return common
