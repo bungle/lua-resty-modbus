@@ -35,8 +35,8 @@ int modbus_report_slave_id(modbus_t *ctx, int max_dest, uint8_t *dest);
 int modbus_write_bit(modbus_t *ctx, int coil_addr, int status);
 int modbus_write_register(modbus_t *ctx, int reg_addr, int value);
 int modbus_write_bits(modbus_t *ctx, int addr, int nb, const uint8_t *data);
-/*
 int modbus_write_registers(modbus_t *ctx, int addr, int nb, const uint16_t *data);
+/*
 int modbus_mask_write_register(modbus_t *ctx, int addr, uint16_t and_mask, uint16_t or_mask);
 int modbus_write_and_read_registers(modbus_t *ctx, int write_addr, int write_nb, const uint16_t *src, int read_addr, int read_nb, uint16_t *dest);
 void modbus_set_bits_from_byte(uint8_t *dest, int idx, const uint8_t value);
@@ -196,10 +196,9 @@ function common:read_registers(addr, nb)
     if regs == -1 then
         return nil, strerror()
     end
-    regs = regs - 1
     local res = {}
-    for i=0, regs do
-        res[i+1] = dest[i]
+    for i=1, regs do
+        res[i] = dest[i-1]
     end
     return res
 end
@@ -211,10 +210,9 @@ function common:read_input_registers(addr, nb)
     if regs == -1 then
         return nil, strerror()
     end
-    regs = regs - 1
     local res = {}
-    for i=0, regs do
-        res[i+1] = dest[i]
+    for i=1, regs do
+        res[i] = dest[i-1]
     end
     return res
 end
@@ -246,6 +244,19 @@ end
 
 function common:write_bits(addr, nb, data)
     local rt = lib.modbus_write_bits(self.context, addr, nb, data)
+    if rt == -1 then
+        return nil, strerror()
+    end
+    return rt
+end
+
+function common:write_registers(addr, nb, data)
+    local len = #data
+    local src = ffi_new(dest16t, len)
+    for i=1, len do
+        src[i-1] = data[i]
+    end
+    local rt = lib.modbus_write_registers(self.context, addr, nb, src)
     if rt == -1 then
         return nil, strerror()
     end
