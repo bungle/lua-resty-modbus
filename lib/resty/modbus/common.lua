@@ -7,8 +7,6 @@ local ffi_errno = ffi.errno
 local ffi_typeof = ffi.typeof
 local ffi_sizeof = ffi.sizeof
 local ffi_copy = ffi.copy
-local C = ffi.C
-local tonumber = tonumber
 
 ffi_cdef[[
 extern const unsigned int libmodbus_version_major;
@@ -137,7 +135,7 @@ function common:get_byte_timeout()
     if rt == -1 then
         return nil, strerror()
     end
-    return tonumber(sec[0]), tonumber(usec[0])
+    return sec[0], usec[0]
 end
 
 function common:set_byte_timeout(sec, usec)
@@ -153,7 +151,7 @@ function common:get_response_timeout()
     if rt == -1 then
         return nil, strerror()
     end
-    return tonumber(sec[0]), tonumber(usec[0])
+    return sec[0], usec[0]
 end
 
 function common:set_response_timeout(sec, usec)
