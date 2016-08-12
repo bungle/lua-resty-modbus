@@ -36,9 +36,9 @@ int modbus_write_bit(modbus_t *ctx, int coil_addr, int status);
 int modbus_write_register(modbus_t *ctx, int reg_addr, int value);
 int modbus_write_bits(modbus_t *ctx, int addr, int nb, const uint8_t *data);
 int modbus_write_registers(modbus_t *ctx, int addr, int nb, const uint16_t *data);
+int modbus_write_and_read_registers(modbus_t *ctx, int write_addr, int write_nb, const uint16_t *src, int read_addr, int read_nb, uint16_t *dest);
 /*
 int modbus_mask_write_register(modbus_t *ctx, int addr, uint16_t and_mask, uint16_t or_mask);
-int modbus_write_and_read_registers(modbus_t *ctx, int write_addr, int write_nb, const uint16_t *src, int read_addr, int read_nb, uint16_t *dest);
 void modbus_set_bits_from_byte(uint8_t *dest, int idx, const uint8_t value);
 void modbus_set_bits_from_bytes(uint8_t *dest, int idx, unsigned int nb_bits, const uint8_t *tab_byte);
 uint8_t modbus_get_byte_from_bits(const uint8_t *src, int idx, unsigned int nb_bits);
@@ -261,6 +261,25 @@ function common:write_registers(addr, nb, data)
         return nil, strerror()
     end
     return rt
+end
+
+function common:write_and_read_registers(write_addr, write_nb, source, read_addr, read_nb)
+    local len = #source
+    local src = ffi_new(dest16t, len)
+    for i=1, len do
+        src[i-1] = source[i]
+    end
+    read_nb = read_nb or 1
+    local dest = ffi_new(dest16t, read_nb * size16t)
+    local regs = lib.modbus_write_and_read_registers(self.context, write_addr, write_nb, src, read_addr, read_nb, dest)
+    if regs == -1 then
+        return nil, strerror()
+    end
+    local res = {}
+    for i=1, regs do
+        res[i] = dest[i-1]
+    end
+    return res
 end
 
 return common
