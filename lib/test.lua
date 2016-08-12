@@ -8,9 +8,7 @@ if not rtu then
 end
 
 print("Version", rtu.version)
-
-rtu:set_debug(false)
-
+print("Enabling Debug Mode", rtu:set_debug(true))
 print("Connecting", rtu:connect())
 
 print("Getting serial mode", rtu:get_serial_mode())
@@ -34,7 +32,6 @@ print("Setting response timeout", rtu:set_response_timeout(0, 500000))
 print("Getting response timeout", rtu:get_response_timeout())
 
 print("Getting header length", rtu:get_header_length())
-
 print("Setting slave", rtu:set_slave(1))
 
 ok, err = rtu:read_input_registers(0x3110, 1)

@@ -18,7 +18,7 @@ void modbus_free(modbus_t *ctx);
 void modbus_close(modbus_t *ctx);
 int modbus_flush(modbus_t *ctx);
 const char *modbus_strerror(int errnum);
-void modbus_set_debug(modbus_t *ctx, int boolean);
+int modbus_set_debug(modbus_t *ctx, int flag);
 int modbus_set_slave(modbus_t* ctx, int slave);
 int modbus_send_raw_request(modbus_t *ctx, uint8_t *raw_req, int raw_req_length);
 int modbus_get_response_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
@@ -95,7 +95,11 @@ function common:flush()
 end
 
 function common:set_debug(enable)
-    lib.modbus_set_debug(self.context, not not enable)
+    local rt = lib.modbus_set_debug(self.context, not not enable)
+    if rt == -1 then
+        return nil, strerror()
+    end
+    return rt
 end
 
 function common:set_slave(slave)
@@ -104,7 +108,6 @@ function common:set_slave(slave)
         return nil, strerror()
     end
     return rt
-
 end
 
 function common:send_raw_request(raw)
