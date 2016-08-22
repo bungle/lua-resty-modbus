@@ -37,16 +37,19 @@ int modbus_write_register(modbus_t *ctx, int reg_addr, int value);
 int modbus_write_bits(modbus_t *ctx, int addr, int nb, const uint8_t *data);
 int modbus_write_registers(modbus_t *ctx, int addr, int nb, const uint16_t *data);
 int modbus_write_and_read_registers(modbus_t *ctx, int write_addr, int write_nb, const uint16_t *src, int read_addr, int read_nb, uint16_t *dest);
-/*
-int modbus_mask_write_register(modbus_t *ctx, int addr, uint16_t and_mask, uint16_t or_mask);
-void modbus_set_bits_from_byte(uint8_t *dest, int idx, const uint8_t value);
-void modbus_set_bits_from_bytes(uint8_t *dest, int idx, unsigned int nb_bits, const uint8_t *tab_byte);
-uint8_t modbus_get_byte_from_bits(const uint8_t *src, int idx, unsigned int nb_bits);
+int modbus_get_socket(modbus_t *ctx);
 float modbus_get_float(const uint16_t *src);
 float modbus_get_float_abcd(const uint16_t *src);
 float modbus_get_float_dcba(const uint16_t *src);
 float modbus_get_float_badc(const uint16_t *src);
 float modbus_get_float_cdab(const uint16_t *src);
+/*
+int modbus_set_socket(modbus_t *ctx, int s);
+int modbus_mask_write_register(modbus_t *ctx, int addr, uint16_t and_mask, uint16_t or_mask);
+void modbus_set_bits_from_byte(uint8_t *dest, int idx, const uint8_t value);
+void modbus_set_bits_from_bytes(uint8_t *dest, int idx, unsigned int nb_bits, const uint8_t *tab_byte);
+uint8_t modbus_get_byte_from_bits(const uint8_t *src, int idx, unsigned int nb_bits);
+
 void modbus_set_float(float f, uint16_t *dest);
 void modbus_set_float_abcd(float f, uint16_t *dest);
 void modbus_set_float_dcba(float f, uint16_t *dest);
@@ -281,5 +284,30 @@ function common:write_and_read_registers(write_addr, write_nb, source, read_addr
     end
     return res
 end
+
+function common:get_socket()
+    local fd = lib.modbus_get_socket(self.context)
+    if fd == -1 then
+        return nil, strerror()
+    end
+    return fd
+end
+
+function common:get_float_abcd(src)
+    return lib.modbus_get_float_abcd(src)
+end
+
+function common:get_float_badc(src)
+    return lib.modbus_get_float_badc(src)
+end
+
+function common:get_float_cdab(src)
+    return lib.modbus_get_float_cdab(src)
+end
+
+function common:get_float_dcba(src)
+    return lib.modbus_get_float_dcba(src)
+end
+
 
 return common
