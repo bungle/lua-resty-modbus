@@ -41,5 +41,6 @@ print("Reading input registers, temperature", ok and ok[1] or err)
 ok, err = rtu:read_input_registers(0x311A, 1)
 
 print("Reading input registers, SOC", ok and ok[1] or err)
+print("Getting file descriptor", rtu:get_socket())
 
 rtu:close()
